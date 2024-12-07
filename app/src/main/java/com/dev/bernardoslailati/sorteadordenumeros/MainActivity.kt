@@ -2,15 +2,17 @@ package com.dev.bernardoslailati.sorteadordenumeros
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.widget.AppCompatButton
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.dev.bernardoslailati.sorteadordenumeros.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private val viewModel: SorteioViewModel by viewModels()
 
     private lateinit var binding: ActivityMainBinding
 
@@ -35,28 +37,36 @@ class MainActivity : AppCompatActivity() {
 
         with(binding) {
             btnDraw.setOnClickListener {
-                when(btnDraw.text) {
+                when (btnDraw.text) {
                     getString(R.string.sortear) -> {
                         navController?.navigate(R.id.action_configuracaoDeSorteioFragment_to_resultadoSorteioFragment)
                         btnDraw.apply {
                             text = getString(R.string.sortear_novamente)
-                            setCompoundDrawablesWithIntrinsicBounds(null, null,
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                null,
+                                null,
                                 AppCompatResources.getDrawable(
                                     this@MainActivity,
                                     R.drawable.ic_sortear_novamente
-                                ), null
+                                ),
+                                null
                             )
                         }
+                        viewModel.drawNumbers()
                     }
+
                     getString(R.string.sortear_novamente) -> {
                         navController?.popBackStack()
                         btnDraw.apply {
                             text = getString(R.string.sortear)
-                            setCompoundDrawablesWithIntrinsicBounds(null, null,
+                            setCompoundDrawablesWithIntrinsicBounds(
+                                null,
+                                null,
                                 AppCompatResources.getDrawable(
                                     this@MainActivity,
                                     R.drawable.ic_ir
-                                ), null
+                                ),
+                                null
                             )
                         }
                     }

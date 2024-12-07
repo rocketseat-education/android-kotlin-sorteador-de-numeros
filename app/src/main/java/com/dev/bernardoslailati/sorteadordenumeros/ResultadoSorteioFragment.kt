@@ -7,18 +7,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.dev.bernardoslailati.sorteadordenumeros.databinding.FragmentResultadoSorteioBinding
-import kotlin.random.Random
+import kotlinx.coroutines.launch
 
 class ResultadoSorteioFragment : Fragment() {
+
+    private val viewModel: SorteioViewModel by activityViewModels()
 
     private var _binding: FragmentResultadoSorteioBinding? = null
     private val binding get() = _binding!!
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentResultadoSorteioBinding.inflate(inflater, container, false)
         val view = binding.root
         return view
@@ -27,26 +36,25 @@ class ResultadoSorteioFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        with(binding){
-            tbDrawNumber.text = getString(R.string.numero_do_sorteio, "35")
+        with(binding) {
+            lifecycleScope.launch {
+                viewModel.uiState.collect { uiState ->
+                    tbDrawNumber.text =
+                        getString(R.string.numero_do_sorteio, uiState.currentDrawNumber.toString())
 
-
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
-            generateDrawNumberTextView()
+                    clearLastDrewNumbers()
+                    uiState.drawNumbers.forEach { drawNumber ->
+                        generateDrawNumberTextView(drawNumber = drawNumber)
+                    }
+                }
+            }
         }
     }
 
-    private fun FragmentResultadoSorteioBinding.generateDrawNumberTextView() {
+    private fun FragmentResultadoSorteioBinding.generateDrawNumberTextView(drawNumber: Int) {
         val drawNumberTextView = TextView(requireContext()).apply {
             id = View.generateViewId()
-            text = Random.nextInt(100).toString()
+            text = drawNumber.toString()
             setTextAppearance(R.style.TextAppearance_RobotoMono_Overline)
             textSize = 48f
             setTextColor(ContextCompat.getColor(requireContext(), R.color.content_brand))
@@ -55,5 +63,11 @@ class ResultadoSorteioFragment : Fragment() {
         root.addView(drawNumberTextView)
         flowResultNumbersHelper.referencedIds =
             flowResultNumbersHelper.referencedIds.plus(drawNumberTextView.id)
+    }
+
+    private fun FragmentResultadoSorteioBinding.clearLastDrewNumbers() {
+        flowResultNumbersHelper.referencedIds.forEach {
+            root.removeView(root.findViewById(it))
+        }
     }
 }
