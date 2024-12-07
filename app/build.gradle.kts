@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.dev.bernardoslailati.sorteadordenumeros"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.dev.bernardoslailati.sorteadordenumeros"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
